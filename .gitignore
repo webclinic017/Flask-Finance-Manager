@@ -1,3 +1,5 @@
 __pycache__
 venv
 udo certbot renew --dry-runsudo certbot renew --dry-runsudo certbot renew --dry-runsudo certbot renew --dry-run
+/webApp/site.db
+/webApp/static/profile_pics

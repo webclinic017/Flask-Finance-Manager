@@ -1,0 +1,137 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <div class="tasks content-section">
+        <form method="POST" action="{{url_for('users.tasks')}}">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+
+            <div class="row">
+                <div class="col">
+                    {{ form.due_date.label(class="form-control-label") }}
+                    {% if form.due_date.errors %}
+                        {{ form.due_date(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.due_date.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.due_date(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="col">
+                    {{ form.content.label(class="form-control-label") }}
+                    {% if form.content.errors %}
+                        {{ form.content(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.content.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.content(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="col">
+                    {{ form.category.label(class="form-control-label") }}
+                    {% if form.category.errors %}
+                        {{ form.category(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.category.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.category(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="col task-rating">
+                    {{ form.importance.label(class="form-control-label") }}
+                    {% if form.importance.errors %}
+                        {{ form.importance(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.importance.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {% for subfield in form.importance %}
+                        <tr>
+                            <td>{{ subfield }}</td>
+                            <td>{{ subfield.label }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+
+
+
+        <div>
+            <table class="table table-dark">
+                <form  method="POST" action="">  
+                    <tr>
+      
+                            {{ sort_form.hidden_tag() }}
+                      <th>#</th>
+                      <th>Date Added</th>
+                      <th>Task</th>
+                      <th>Due date:
+                        {% for subfield in sort_form.date_desc %}                
+                        
+                            {{ subfield }}
+                           {{ subfield.label(class="arrow") }}
+    
+                        {% endfor %}   
+                      </th>
+                      <th>Category:
+                        {% if sort_form.sort_category.errors %}
+                            {{ sort_form.sort_category(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in sort_form.sort_category.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ sort_form.sort_category(class="form-control form-control-lg") }}
+                        {% endif %}
+    
+                      </th>
+                      <th>Importance:
+                        {% for subfield in sort_form.imp_desc %}                
+                            {{ subfield }}
+                            {{ subfield.label(class="arrow") }}
+                        {% endfor %}                      
+                      </th>
+                      <th>{{sort_form.sort_submit(class="btn-sml sort-submit btn-primary")}}</th>
+    
+                    </tr>
+                </form>
+              {% for task in tasks %}     
+                <tr>
+                  <td>{{loop.index}}</td>
+                  <td>{{task.date_posted.strftime('%d-%m-%Y')}}</td>
+                  <td>{{task.content}}</td>
+                  <td>{{task.due_date}}</td>
+                  <td style="text-transform: capitalize;">{{task.category}}</td>
+                  <td>{{task.importance}}</td>
+                  <td><form action="{{ url_for('users.delete_task', task_id=task.id) }}" method="POST">
+                      <input class="btn btn-light" type="submit" value="&#10004">
+                  </form>            </td>
+      
+                </tr>
+              {% endfor %}
+              </table>
+            </form>    
+        </div>
+
+        </div>
+
+
+{% endblock content %}

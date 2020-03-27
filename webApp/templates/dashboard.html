@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+    <div class="content-section">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">{{ legend }}</legend>
+                <div class="form-group">
+                    {{ form.begin.label(class="form-control-label") }}
+                    {% if form.begin.errors %}
+                        {{ form.begin(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.begin.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.begin(class="form-control form-control-lg", placeholder="YYYY-MM-DD") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.end.label(class="form-control-label") }}
+                    {% if form.end.errors %}
+                        {{ form.end(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.end.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.end(class="form-control form-control-lg", placeholder="YYYY-MM-DD") }}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+        
+
+            <div class='row'>
+                <div class='col'>
+                    <table class="table table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Amount</th>
+                    </tr>
+                    <tr>
+                        <td>Fixed monthly costs</td>
+                        <td>€ {{ info['monthly_cost'] }}</td>
+                    </tr>
+                    {% for cat,sum in info['sums'].items() %}     
+                    <tr>
+                        <td>{{cat.capitalize()}}</td>
+                        <td>€{{sum}}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr style="border-top: 2px solid white;">
+                        <td>Total Expenses</td>
+                        <td>€{{ info['total_sum'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Total monthly cost from {{ info['begin_month'] }} till {{ info['end_month'] }} </td>
+                        <td>€{{ info['total_monthly_cost'] }}</td>
+                    </tr>
+                    <tr style="border-top: 4px solid white;">
+                        <td >Total Costs</td>
+                        <td>€{{ info['total_sum'] + info['total_monthly_cost'] }}</td>
+                    </tr>
+                </table>
+              </div>
+              <div class='graph col'>
+                <img src='data:image/png;base64,{{data}}'>
+              </div>
+            </div>
+        </div>
+        
+
+{% endblock content %}

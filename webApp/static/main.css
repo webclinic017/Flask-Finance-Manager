@@ -118,3 +118,21 @@ a.article-title:hover {
   width: 500px;
   margin-left: 30px;
 }
+
+.total {
+  height: 75px;
+  width: 250px;
+  font-weight: 500;
+  font-size: 30px;
+  color: white;
+  float: right;
+
+}
+
+.total .red {
+  background-color: red;
+}
+
+.total .green {
+  background-color: green
+}

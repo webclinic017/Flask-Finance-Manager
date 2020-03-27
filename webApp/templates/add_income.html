@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <div class="content-section">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+
+            <div class="row">
+                <div class="col">
+                    {{ form.source.label(class="form-control-label") }}
+                    {% if form.source.errors %}
+                        {{ form.source(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.source.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.source(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="col">
+                    {{ form.company.label(class="form-control-label") }}
+                    {% if form.company.errors %}
+                        {{ form.company(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.company.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.company(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="col">
+                    {{ form.amount.label(class="form-control-label") }}
+                    {% if form.amount.errors %}
+                        {{ form.amount(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.amount.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.amount(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="col task-rating">
+                    {{ form.monthly.label(class="form-control-label") }}
+                    {% if form.monthly.errors %}
+                        {{ form.monthly(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.monthly.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {% for subfield in form.monthly %}
+                        <tr>
+                            <td>{{ subfield }}</td>
+                            <td>{{ subfield.label }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col">
+                {{ form.hours_worked.label(class="form-control-label") }}
+                {% if form.hours_worked.errors %}
+                    {{ form.hours_worked(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.hours_worked.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.hours_worked(class="form-control form-control-lg" , placeholder= "1 hour 45 min = 1.75") }}
+                {% endif %}
+            </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+
+
+        </div>
+
+
+{% endblock content %}

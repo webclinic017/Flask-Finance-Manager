@@ -41,7 +41,9 @@
         
 
             <div class='row'>
+                <!-- Expenses -->
                 <div class='col'>
+                    <h1>Expenses</h1>
                     <table class="table table-dark">
                     <tr>
                         <th>Name</th>
@@ -49,9 +51,9 @@
                     </tr>
                     <tr>
                         <td>Fixed monthly costs</td>
-                        <td>€ {{ info['monthly_cost'] }}</td>
+                        <td>€ {{ expenses['monthly_cost'] }}</td>
                     </tr>
-                    {% for cat,sum in info['sums'].items() %}     
+                    {% for cat,sum in expenses['sums'].items() %}     
                     <tr>
                         <td>{{cat.capitalize()}}</td>
                         <td>€{{sum}}</td>
@@ -59,22 +61,87 @@
                     {% endfor %}
                     <tr style="border-top: 2px solid white;">
                         <td>Total Expenses</td>
-                        <td>€{{ info['total_sum'] }}</td>
+                        <td>€{{ expenses['total_sum'] }}</td>
                     </tr>
                     <tr>
-                        <td>Total monthly cost from {{ info['begin_month'] }} till {{ info['end_month'] }} </td>
-                        <td>€{{ info['total_monthly_cost'] }}</td>
+                        <td>Total monthly cost from {{ expenses['begin_month'] }} till {{ expenses['end_month'] }} </td>
+                        <td>€{{ expenses['total_monthly_cost'] }}</td>
                     </tr>
                     <tr style="border-top: 4px solid white;">
                         <td >Total Costs</td>
-                        <td>€{{ info['total_sum'] + info['total_monthly_cost'] }}</td>
+                        <td>€{{ expenses['total'] }}</td>
                     </tr>
                 </table>
+                <div class='graph'>
+                    <img src='data:image/png;base64,{{data}}'>
+                </div>
               </div>
-              <div class='graph col'>
-                <img src='data:image/png;base64,{{data}}'>
+              <!-- Income -->
+              <div class='col'>
+                  <h1>Income</h1>
+                  <table class="table table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Amount</th>
+                    </tr>
+                    <tr>
+                        <td>Total INCL. VAT</td>
+                        <td>€ {{ income['freelance']['amount'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Total VAT</td>
+                        <td>€ {{ '{:.2f}'.format(income['freelance']['VAT']) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Hours Worked</td>
+                        <td>{{ '{:.2f}'.format(income['freelance']['hours_worked'])  }}</td>
+                    </tr>
+                    <tr>
+                        <td>Average Wage/Hour</td>
+                        <td>€ {{ '{:.2f}'.format(income['freelance']['avg_wage']) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Average Hours/Month</td>
+                        <td>{{ '{:.2f}'.format(income['freelance']['avg_hours']) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Net Total</td>
+                        <td>€ {{ '{:.2f}'.format(income['freelance']['net_amount']) }}</td>
+                    </tr>
+                    <tr style="border-top: 2px solid white;">
+                        <td>Net Amount</td>
+                        <td>€ {{ income['wage']['amount'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Average Hours/Month</td>
+                        <td>€ {{ '{:.2f}'.format(income['wage']['avg_hours']) }}</td>
+                    </tr>
+                    <tr style="border-top: 2px solid white;">
+                        <td>Monthly Income</td>
+                        <td>€ {{ income['other']['monthly'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Monthly Income</td>
+                        <td>€ {{ income['other']['total_monthly'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Other</td>
+                        <td>€ {{ income['other']['amount'] }}</td>
+                    </tr>
+                    <tr style="border-top: 4px solid white;">
+                        <td>Total Income</td>
+                        <td>€ {{ '{:.2f}'.format(income['total'] )}}</td>
+                    </tr>                   
+                </table>
+                <div class='total row'>
+                    <h5 class='col'>Net Total</h5>
+                    <p class="col {{ "red" if total <= 0 else "green" }}">{{ '{:.2f}'.format(total) }}</p> 
+                </div>
               </div>
+
             </div>
+
+
         </div>
         
 

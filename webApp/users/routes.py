@@ -1,10 +1,11 @@
 from flask import render_template, url_for, flash, redirect, request, Blueprint , make_response
 from flask_login import login_user, current_user, logout_user, login_required
 from webApp import db, bcrypt
-from webApp.models import User, Post , Task , Transaction
+from webApp.models import User, Post , Task , Transaction , Income
 from webApp.users.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
                                    RequestResetForm, ResetPasswordForm, TaskForm, 
-                                   Sort_TaskForm, TransactionForm,Sort_Transactions, Generate_Report)
+                                   Sort_TaskForm, TransactionForm, Sort_Transactions, 
+                                   Generate_Report, IncomeForm)
 from webApp.users.utils import save_picture, send_reset_email
 import datetime as dt
 from sqlalchemy import extract
@@ -14,7 +15,7 @@ import base64
 import math
 from io import BytesIO
 
-from matplotlib.figure import Figure
+
 
 
 
@@ -192,12 +193,6 @@ def sum_total(transactions):
     return sum([trans.amount for trans in transactions])
 
 
-def num_month(begin,end):
-    #Using a sting of format %Y-%m-%d calculates the number of months rounded up
-    begin = dt.datetime.strptime(begin, '%Y-%m-%d')
-    end = dt.datetime.strptime(end, '%Y-%m-%d')
-    return math.ceil((end - begin).days/30)
- 
 
 #Filters by month and year
 # trans = Transaction.query.filter(extract("month", Transaction.date)==month).filter(extract('year', Transaction.date)==year).all()
@@ -227,7 +222,7 @@ def transactions(month=curr_month, category="all", date_desc=0):
     if form.submit.data and form.validate_on_submit():
 
         tax= calc_TAX(float(form.amount.data),float(form.tax_percentage.data))
-        if form.category.data == 'Fixed Monthly Cost':
+        if form.category.data == 'abbonement':
             transaction = Transaction(category= form.category.data, 
             content=form.content.data, author= current_user, 
             amount=float(form.amount.data) , tax_percentage = float(form.tax_percentage.data) , tax_amount=tax, sub=True)
@@ -260,21 +255,43 @@ def delete_transaction(transaction_id):
 
 
 
+#Add income
+@users.route("/add_income", methods=['GET','POST'])
+@login_required
+def add_income():
+    form = IncomeForm()
+    if form.submit.data and form.validate_on_submit():
+        if form.monthly.data == "Yes":
+            monthly = True
+        else:
+            monthly = False
+
+        income = Income(author= current_user , company = form.company.data , source = form.source.data , amount = form.amount.data , monthly = monthly , hours_worked = form.hours_worked.data)
+        db.session.add(income)
+        db.session.commit()
+        flash('Income Added!','success')
+        return redirect(url_for('users.add_income'))
+
+    return render_template('add_income.html', form=form)
+
+
+
 
 #Dashboard 
 
 @users.route("/dashboard/<begin>/<end>", methods=['GET','POST'])
 @login_required
 def dashboard(begin,end):
-    #Gets all users transactions and transforms them into a dataframe with the date as index
+
+
+
+    #Gets all users transactions 
     trans = Transaction.query.filter_by(author = current_user)
-
-
-
-
+    
 
     #Checks if the current user has any transactions otherwise redirects the user to the transaction page
     if trans.count() != 0 :
+        #Transform transactions into a dataframe with the date as index
         df = pd.DataFrame(vars(t) for t in trans)
         df.set_index('date', inplace= True)
 
@@ -293,17 +310,18 @@ def dashboard(begin,end):
         data_grp = data.groupby(['category'])
         sums = data_grp.apply(lambda x: x.amount.sum())
         #Dict containing all info so we can pass this onto the template
-        info= {}
-        info['sums'] = sums
-        info['total_sum'] = sum(info['sums'])
-        info['monthly_cost'] = df.loc[df['sub'] == True, 'amount'].sum()
+        expenses = {}
+        expenses['sums'] = sums
+        expenses['total_sum'] = sum(expenses['sums'])
+        expenses['monthly_cost'] = df.loc[df['sub'] == True, 'amount'].sum()
 
         #Calculates total monthly cost by subtracting end and begin taking the days and rounding the days/29 up to the nearest integer
-        info['total_monthly_cost'] = info['monthly_cost']*math.ceil((end-begin).days/29)
+        expenses['total_monthly_cost'] = expenses['monthly_cost']*math.ceil((end-begin).days/29)
+        expenses['total'] = expenses['total_monthly_cost'] + expenses['total_sum']
 
         
-        info['begin_month'] = begin.strftime('%B %Y')
-        info['end_month'] = end.strftime('%B %Y')
+        expenses['begin_month'] = begin.strftime('%B %Y')
+        expenses['end_month'] = end.strftime('%B %Y')
 
 
                 #Generates Graph
@@ -318,10 +336,46 @@ def dashboard(begin,end):
         png_data = base64.b64encode(buf.getbuffer()).decode("ascii")
 
 
-        return render_template('dashboard.html' , title='Dashboard' , info=info  , form=form , data=png_data , no_sidebar=True)   
+        #Income data
+        income_data = Income.query.filter_by(author = current_user)
+        income_df = pd.DataFrame(vars(i) for i in income_data)
+        income_df.set_index('date', inplace= True)
+
+        income_df_slice = income_df[begin:end]
+
+        income = {}
+
+        freelance_df = income_df.loc[(income_df_slice['source'] == 'Freelance')]
+        income['freelance'] = {}
+        income['freelance']['amount'] = freelance_df['amount'].sum()
+        income['freelance']['VAT'] = (income['freelance']['amount']/121)*21
+        income['freelance']['net_amount'] = income['freelance']['amount'] - income['freelance']['VAT'] 
+        income['freelance']['hours_worked'] = freelance_df['hours_worked'].sum()
+        income['freelance']['avg_wage'] =  income['freelance']['net_amount']/income['freelance']['hours_worked']
+        income['freelance']['avg_hours'] = float(income['freelance']['hours_worked'])/((end-begin).days/30.44)
+
+        wage_df = income_df.loc[(income_df_slice['source'] == 'Wage')]    
+        income['wage'] = {}
+        income['wage']['amount'] = wage_df['amount'].sum()
+        income['wage']['hours_worked'] = wage_df['hours_worked'].sum()
+        income['wage']['avg_hours'] = float(income['wage']['hours_worked'])/((end-begin).days/30.44)
+
+
+        income['other'] = {}
+        income['other']['monthly'] = income_df.loc[(income_df['monthly'] == True)]['amount'].sum()
+        income['other']['total_monthly'] = income['other']['monthly']*math.ceil((end-begin).days/29)
+        income['other']['amount'] = income_df_slice.loc[(income_df_slice['source'] == 'Other')]['amount'].sum()
+
+        income['total'] = income['freelance']['net_amount'] + income['wage']['amount'] + income['other']['total_monthly'] + income['other']['amount']
+
+        total = income['total'] - expenses['total']
+
+        return render_template('dashboard.html' , title='Dashboard' , expenses=expenses , income=income , total=total, form=form , data=png_data , no_sidebar=True)   
     else:
         flash("Please add some transactions first before accessing the dashboard",'danger')
         return redirect(url_for('users.transactions', month=curr_month, category="all", date_desc=0))
+
+
 
 
 

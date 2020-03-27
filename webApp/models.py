@@ -14,9 +14,12 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     password = db.Column(db.String(60), nullable=False)
+
+    #db Links to other models 
     posts = db.relationship('Post', backref='author', lazy=True)
     tasks = db.relationship('Task', backref='author', lazy=True)
     transactions = db.relationship('Transaction', backref='author', lazy=True)
+    income =  db.relationship('Income', backref='author', lazy=True)
     
     def get_reset_token(self, expires_sec=1800):
         s = Serializer(current_app.config['SECRET_KEY'] , expires_sec)
@@ -70,3 +73,15 @@ class Transaction(db.Model):
     def __repr__(self):
         return f"Transaction('{self.amount}','{self.content}','{self.date}')"
 
+
+class Income(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    source = db.Column(db.String(100))
+    amount = db.Column(db.Numeric(10,2))
+    monthly = db.Column(db.Boolean, default=False)
+    company = db.Column(db.String(100))
+    hours_worked = db.Column(db.Numeric(10,2))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) 
+    def __repr__(self):
+        return f"Income('€{self.amount} ','{self.company}  ','{self.date}')"   

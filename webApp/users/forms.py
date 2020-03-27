@@ -71,7 +71,7 @@ class ResetPasswordForm(FlaskForm):
 class TaskForm(FlaskForm):
     due_date = StringField('Due Date', validators=[DataRequired()])
     content = StringField('Content',  validators=[DataRequired()])
-    category = SelectField('Category', choices=[('school','School'),('work','Work'),('website','Website'),('other','Other')] , default='school')
+    category = SelectField('Category', choices=[('school','School'),('work','Work'),('website','Website'),('other','Other')] , default='website')
     importance = RadioField('Importance', choices=[('1','1'),('2','2'),('3','3'),('4','4'),('5','5')], default = '1')
     submit = SubmitField('Post')
 
@@ -90,15 +90,24 @@ this_month = date.today().strftime("%m")
 class TransactionForm(FlaskForm):
     amount = DecimalField('Amount', validators=[DataRequired()])
     content = StringField('Content',  validators=[DataRequired()])
-    category = SelectField('Category', choices=[('Groceries','Groceries'),('Bars/Clubs','Bars/Clubs'),('Restaurants','Restaurants'),('Smoking','Smoking'),('Other','Other'),('Fixed Monthly Cost','Fixed Monthly Cost')] , default='Groceries')
+    category = SelectField('Category',  choices=[('Groceries','Groceries'),('Bars/Clubs','Bars/Clubs'),('Restaurants','Restaurants'),('Smoking','Smoking'),('Other','Other'),('Fixed Monthly Cost','Fixed Monthly Cost')] , default='Groceries' )
     tax_percentage = RadioField('TAX %', choices=[('21','21%'),('9','9%'),('0','0%')], default='21')
     submit = SubmitField('Post')
+
+class IncomeForm(FlaskForm):
+    company = StringField('Company',  validators=[DataRequired()])
+    source = SelectField('Source', choices=[('Freelance','Freelance'),('Wage','Wage'),('other','Other')] , default='Freelance')
+    monthly = RadioField('Monthly?', choices=[('Yes','Yes'),('No','No')], default = 'No')
+    amount = DecimalField('Amount', validators=[DataRequired()])
+    hours_worked = DecimalField('Hours Worked', validators=[DataRequired()])
+    submit = SubmitField('Add')
+
 
 months = [("01","January"),("02","Februari"),("03","March"),("04","April"),("05","May"),("06","Juni"),("07","Juli"),("08","August"),("09","September"),("10","Oktober"),("11","November"),("12","December")]
 
 class Sort_Transactions(FlaskForm):
     month = SelectField('Month:',choices=months, default = this_month)
-    sort_category = SelectField('Category:',choices=[('all','All'),('eten','Eten'),('uitgaan','Uitgaan'),('roken','Roken'),('werk','Werk'),('overig','Overig'),('abbonement','Abbonement')] , default='all')
+    sort_category = SelectField('Category:',choices=[('all','All'),('Groceries','Groceries'),('Bars/Clubs','Bars/Clubs'),('Restaurants','Restaurants'),('Smoking','Smoking'),('Other','Other')] , default='all')
     date_desc = RadioField('Date', choices=[('0','&#x2191;'),('1','&#x2193;')] , default='0')
     sort_submit = SubmitField('Sort')
 
@@ -106,3 +115,5 @@ class Generate_Report(FlaskForm):
     begin = StringField('Begin Date', validators=[DataRequired()])
     end = StringField('End Date', validators=[DataRequired()], default = date.today().strftime('%Y-%m-%d'))
     submit = SubmitField('Generate Report')
+
+

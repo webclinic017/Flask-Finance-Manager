@@ -3,3 +3,4 @@ venv
 udo certbot renew --dry-runsudo certbot renew --dry-runsudo certbot renew --dry-runsudo certbot renew --dry-run
 site.db
 **/profile_pics
+db_tester.py

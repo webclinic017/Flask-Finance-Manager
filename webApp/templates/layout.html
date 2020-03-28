@@ -38,7 +38,7 @@
             <div class="navbar-nav">
               {% if current_user.is_authenticated %}
                 <a class="nav-item nav-link" href="{{ url_for('users.dashboard', begin="2020-03-01", end="2020-04-30") }}">Dashboard</a>
-                <a class="nav-item nav-link" href="{{ url_for('users.transactions', month="03", category="all",  date_desc=0) }}">Transactions</a>   
+                <a class="nav-item nav-link" href="{{ url_for('users.transactions') }}">Transactions</a>   
                 <a class="nav-item nav-link" href="{{ url_for('users.add_income') }}">Income</a>
                 <a class="nav-item nav-link" href="{{ url_for('users.tasks') }}">Tasks</a>              
                 <a class="nav-item nav-link" href="{{ url_for('posts.new_post') }}">New Post</a>

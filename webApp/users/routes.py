@@ -202,11 +202,23 @@ curr_month= dt.date.today().strftime("%m")
 
 #Transaction Page where you can add and sort transactions by category and month
 
-@users.route("/transactions/<month>-<string:category>-<date_desc>", methods=['GET','POST'])
+@users.route("/transactions/", methods=['GET','POST'])
 @login_required
-def transactions(month=curr_month, category="all", date_desc=0):
+def transactions():
     form = TransactionForm()
     sort_form = Sort_Transactions()
+    #Gets querystring arguments if none set to a default
+    if request.args.get("month"):
+        month = request.args.get("month")
+    else:
+        month = curr_month
+
+    if request.args.get("category"):
+        category = request.args.get("category")
+    else:
+        category = "all"
+
+
     if sort_form.sort_submit.data and sort_form.validate_on_submit():
         return redirect(url_for('users.transactions', month=sort_form.month.data, category=sort_form.sort_category.data,  date_desc=sort_form.date_desc.data))
 

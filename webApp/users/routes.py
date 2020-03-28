@@ -327,8 +327,8 @@ def dashboard(begin,end):
         expenses['total_sum'] = sum(expenses['sums'])
         expenses['monthly_cost'] = df.loc[df['sub'] == True, 'amount'].sum()
 
-        #Calculates total monthly cost by subtracting end and begin taking the days and rounding the days/29 up to the nearest integer
-        expenses['total_monthly_cost'] = expenses['monthly_cost']*math.ceil((end-begin).days/29)
+        #Calculates total monthly cost by subtracting end and begin taking the days and rounding the days/31.1 up to the nearest integer
+        expenses['total_monthly_cost'] = expenses['monthly_cost']*math.ceil((end-begin).days/31.1)
         expenses['total'] = expenses['total_monthly_cost'] + expenses['total_sum']
 
         
@@ -375,7 +375,7 @@ def dashboard(begin,end):
 
         income['other'] = {}
         income['other']['monthly'] = income_df.loc[(income_df['monthly'] == True)]['amount'].sum()
-        income['other']['total_monthly'] = income['other']['monthly']*math.ceil((end-begin).days/29)
+        income['other']['total_monthly'] = income['other']['monthly']*math.ceil((end-begin).days/31.1)
         income['other']['amount'] = income_df_slice.loc[(income_df_slice['source'] == 'Other')]['amount'].sum()
 
         income['total'] = income['freelance']['net_amount'] + income['wage']['amount'] + income['other']['total_monthly'] + income['other']['amount']

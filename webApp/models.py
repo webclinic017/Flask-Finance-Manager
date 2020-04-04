@@ -68,6 +68,7 @@ class Transaction(db.Model):
     tax_percentage = db.Column(db.Integer, default=21)
     amount = db.Column(db.Numeric(10,2))
     sub = db.Column(db.Boolean, default=False)
+    is_deductable = db.Column(db.Boolean, default=False)
     tax_amount= db.Column(db.Numeric(10,2))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     def __repr__(self):

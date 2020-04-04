@@ -84,14 +84,24 @@
                         <th>Name</th>
                         <th>Amount</th>
                     </tr>
+
+                    <tr><td>Freelance</td><td></td></tr>
                     <tr>
                         <td>Total INCL. VAT</td>
                         <td>€ {{ income['freelance']['amount'] }}</td>
                     </tr>
                     <tr>
-                        <td>Total VAT</td>
+                        <td>VAT</td>
                         <td>€ {{ '{:.2f}'.format(income['freelance']['VAT']) }}</td>
                     </tr>
+                    <tr>
+                        <td>Deductable VAT</td>
+                        <td>- € {{ '{:.2f}'.format(income['freelance']['deductable']) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Total VAT</td>
+                        <td>€ {{ '{:.2f}'.format(income['freelance']['Total_VAT']) }}</td>
+                    </tr>                                        
                     <tr>
                         <td>Total Hours Worked</td>
                         <td>{{ '{:.2f}'.format(income['freelance']['hours_worked'])  }}</td>
@@ -108,10 +118,14 @@
                         <td>Net Total</td>
                         <td>€ {{ '{:.2f}'.format(income['freelance']['net_amount']) }}</td>
                     </tr>
-                    <tr style="border-top: 2px solid white;">
+
+
+                    <tr  style="border-top: 2px solid white;" ><td>Wage</td><td></td></tr>
+                    <tr>
                         <td>Net Amount</td>
                         <td>€ {{ income['wage']['amount'] }}</td>
                     </tr>
+                    
                     <tr>
                         <td>Average Hours/Month</td>
                         <td>€ {{ '{:.2f}'.format(income['wage']['avg_hours']) }}</td>

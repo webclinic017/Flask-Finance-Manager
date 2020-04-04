@@ -197,9 +197,10 @@ def sum_total(transactions):
 #Filters by month and year
 # trans = Transaction.query.filter(extract("month", Transaction.date)==month).filter(extract('year', Transaction.date)==year).all()
 
-curr_month= dt.date.today().strftime("%m")
+#curr_month= dt.date.today().strftime("%m")
 
-
+def curr_month():
+    return dt.date.today().strftime("%m")
 #Transaction Page where you can add and sort transactions by category and month
 
 @users.route("/transactions/", methods=['GET','POST'])
@@ -211,7 +212,7 @@ def transactions():
     if request.args.get("month"):
         month = request.args.get("month")
     else:
-        month = curr_month
+        month = curr_month()
 
     if request.args.get("category"):
         category = request.args.get("category")
@@ -234,22 +235,29 @@ def transactions():
     if form.submit.data and form.validate_on_submit():
 
         tax= calc_TAX(float(form.amount.data),float(form.tax_percentage.data))
+
+        # Transforms to BOOLEAN
+        if form.is_deductable.data == "Yes":
+            is_deductable = True
+        else:
+            is_deductable = False
+
         if form.category.data == 'abbonement':
             transaction = Transaction(category= form.category.data, 
             content=form.content.data, author= current_user, 
-            amount=float(form.amount.data) , tax_percentage = float(form.tax_percentage.data) , tax_amount=tax, sub=True)
+            amount=float(form.amount.data) , tax_percentage = float(form.tax_percentage.data) , tax_amount=tax, sub=True , is_deductable = is_deductable)
         else:
             transaction = Transaction(category= form.category.data, 
             content=form.content.data, author= current_user, 
-            amount=float(form.amount.data) , tax_percentage = float(form.tax_percentage.data) , tax_amount=tax)
+            amount=float(form.amount.data) , tax_percentage = float(form.tax_percentage.data) , tax_amount=tax , is_deductable = is_deductable) 
         db.session.add(transaction)
         db.session.commit()
         flash('Added!','success')
-        return redirect(url_for('users.transactions', month=curr_month, category="all",  date_desc=0))
+        return redirect(url_for('users.transactions', month=curr_month(), category="all",  date_desc=0))
 
 
 
-    return render_template('transactions.html', title='Finances' , form=form,  transactions=transactions , sort_form=sort_form , total_sum=total_sum, no_sidebar=True , curr_month=curr_month)
+    return render_template('transactions.html', title='Finances' , form=form,  transactions=transactions , sort_form=sort_form , total_sum=total_sum, no_sidebar=True , curr_month=curr_month())
 
 
 
@@ -361,8 +369,11 @@ def dashboard(begin,end):
         income['freelance'] = {}
         income['freelance']['amount'] = freelance_df['amount'].sum()
         income['freelance']['VAT'] = (income['freelance']['amount']/121)*21
-        income['freelance']['net_amount'] = income['freelance']['amount'] - income['freelance']['VAT'] 
+        #Gets all transactions that are tax deductable and gets their TAX
+        income['freelance']['deductable'] = df.loc[df['is_deductable'] == True, 'tax_amount'].sum()
+        income['freelance']['Total_VAT'] = income['freelance']['VAT'] - income['freelance']['deductable']
         income['freelance']['hours_worked'] = freelance_df['hours_worked'].sum()
+        income['freelance']['net_amount'] = income['freelance']['amount'] - income['freelance']['Total_VAT'] 
         income['freelance']['avg_wage'] =  income['freelance']['net_amount']/income['freelance']['hours_worked']
         income['freelance']['avg_hours'] = float(income['freelance']['hours_worked'])/((end-begin).days/30.44)
 
@@ -385,7 +396,7 @@ def dashboard(begin,end):
         return render_template('dashboard.html' , title='Dashboard' , expenses=expenses , income=income , total=total, form=form , data=png_data , no_sidebar=True)   
     else:
         flash("Please add some transactions first before accessing the dashboard",'danger')
-        return redirect(url_for('users.transactions', month=curr_month, category="all", date_desc=0))
+        return redirect(url_for('users.transactions', month=curr_month(), category="all", date_desc=0))
 
 
 

@@ -92,6 +92,7 @@ class TransactionForm(FlaskForm):
     content = StringField('Content',  validators=[DataRequired()])
     category = SelectField('Category',  choices=[('Groceries','Groceries'),('Bars/Clubs','Bars/Clubs'),('Restaurants','Restaurants'),('Smoking','Smoking'),('Other','Other'),('Fixed Monthly Cost','Fixed Monthly Cost')] , default='Groceries' )
     tax_percentage = RadioField('TAX %', choices=[('21','21%'),('9','9%'),('0','0%')], default='21')
+    is_deductable = RadioField('Tax Deductable?', choices=[('Yes','Yes'),('No','No')], default='No')
     submit = SubmitField('Post')
 
 class IncomeForm(FlaskForm):

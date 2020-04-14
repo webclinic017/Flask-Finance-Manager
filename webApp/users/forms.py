@@ -97,7 +97,7 @@ class TransactionForm(FlaskForm):
 
 class IncomeForm(FlaskForm):
     company = StringField('Company',  validators=[DataRequired()])
-    source = SelectField('Source', choices=[('Freelance','Freelance'),('Wage','Wage'),('other','Other')] , default='Freelance')
+    source = SelectField('Source', choices=[('Freelance','Freelance'),('Wage','Wage'),('Other','Other')] , default='Freelance')
     monthly = RadioField('Monthly?', choices=[('Yes','Yes'),('No','No')], default = 'No')
     amount = DecimalField('Amount', validators=[DataRequired()])
     hours_worked = DecimalField('Hours Worked', validators=[DataRequired()])

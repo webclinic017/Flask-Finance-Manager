@@ -373,9 +373,9 @@ def dashboard(begin,end):
             income['freelance']['VAT'] = (income['freelance']['amount']/121)*21
             #Gets all transactions that are tax deductable and gets their TAX
             income['freelance']['deductable'] = data.loc[data['is_deductable'] == True, 'tax_amount'].sum()
-            income['freelance']['Total_VAT'] = income['freelance']['VAT'] - float(income['freelance']['deductable'])
-            income['freelance']['hours_worked'] = freelance_df['hours_worked'].sum()
-            income['freelance']['net_amount'] = income['freelance']['amount'] - income['freelance']['Total_VAT'] 
+            income['freelance']['Total_VAT'] = float(income['freelance']['VAT']) - float(income['freelance']['deductable'])
+            income['freelance']['hours_worked'] = float(freelance_df['hours_worked'].sum())
+            income['freelance']['net_amount'] = float(income['freelance']['amount']) - income['freelance']['Total_VAT'] 
             income['freelance']['avg_wage'] =  income['freelance']['net_amount']/income['freelance']['hours_worked']
             income['freelance']['avg_hours'] = float(income['freelance']['hours_worked'])/((end-begin).days/30.44)
         else:
@@ -391,7 +391,7 @@ def dashboard(begin,end):
 
         wage_df = income_df_slice.loc[(income_df_slice['source'] == 'Wage')]    
         income['wage'] = {}
-        income['wage']['amount'] = wage_df['amount'].sum()
+        income['wage']['amount'] = float(wage_df['amount'].sum())
         if income['wage']['amount'] != 0:
             income['wage']['hours_worked'] = wage_df['hours_worked'].sum()
             income['wage']['avg_hours'] = float(income['wage']['hours_worked'])/((end-begin).days/30.44)
@@ -404,9 +404,9 @@ def dashboard(begin,end):
         income['other']['total_monthly'] = income['other']['monthly']*math.ceil((end-begin).days/31.1)
         income['other']['amount'] = income_df_slice.loc[(income_df_slice['source'] == 'Other')]['amount'].sum()
 
-        income['total'] = income['freelance']['net_amount'] + income['wage']['amount'] + income['other']['total_monthly'] + income['other']['amount']
+        income['total'] = income['freelance']['net_amount'] + income['wage']['amount'] + float(income['other']['total_monthly']) + float(income['other']['amount'])
 
-        total = income['total'] - expenses['total']
+        total = income['total'] - float(expenses['total'])
 
         return render_template('dashboard.html' , title='Dashboard' , expenses=expenses , income=income , total=total, form=form , data=png_data , no_sidebar=True)   
     else:

@@ -365,24 +365,39 @@ def dashboard(begin,end):
 
         income = {}
 
-        freelance_df = income_df.loc[(income_df_slice['source'] == 'Freelance')]
+        freelance_df = income_df_slice.loc[(income_df_slice['source'] == 'Freelance')]
         income['freelance'] = {}
         income['freelance']['amount'] = freelance_df['amount'].sum()
-        income['freelance']['VAT'] = (income['freelance']['amount']/121)*21
-        #Gets all transactions that are tax deductable and gets their TAX
-        income['freelance']['deductable'] = df.loc[df['is_deductable'] == True, 'tax_amount'].sum()
-        income['freelance']['Total_VAT'] = income['freelance']['VAT'] - income['freelance']['deductable']
-        income['freelance']['hours_worked'] = freelance_df['hours_worked'].sum()
-        income['freelance']['net_amount'] = income['freelance']['amount'] - income['freelance']['Total_VAT'] 
-        income['freelance']['avg_wage'] =  income['freelance']['net_amount']/income['freelance']['hours_worked']
-        income['freelance']['avg_hours'] = float(income['freelance']['hours_worked'])/((end-begin).days/30.44)
+        #Check if there is any data to calculate or it sets everyting to 0 to avoid errors same for wage
+        if income['freelance']['amount'] != 0:
+            income['freelance']['VAT'] = (income['freelance']['amount']/121)*21
+            #Gets all transactions that are tax deductable and gets their TAX
+            income['freelance']['deductable'] = data.loc[data['is_deductable'] == True, 'tax_amount'].sum()
+            income['freelance']['Total_VAT'] = income['freelance']['VAT'] - float(income['freelance']['deductable'])
+            income['freelance']['hours_worked'] = freelance_df['hours_worked'].sum()
+            income['freelance']['net_amount'] = income['freelance']['amount'] - income['freelance']['Total_VAT'] 
+            income['freelance']['avg_wage'] =  income['freelance']['net_amount']/income['freelance']['hours_worked']
+            income['freelance']['avg_hours'] = float(income['freelance']['hours_worked'])/((end-begin).days/30.44)
+        else:
+            income['freelance']['VAT'] = 0
+            #Gets all transactions that are tax deductable and gets their TAX
+            income['freelance']['deductable'] = 0
+            income['freelance']['Total_VAT'] = 0
+            income['freelance']['hours_worked'] = 0
+            income['freelance']['net_amount'] = 0
+            income['freelance']['avg_wage'] =  0
+            income['freelance']['avg_hours'] =0
 
-        wage_df = income_df.loc[(income_df_slice['source'] == 'Wage')]    
+
+        wage_df = income_df_slice.loc[(income_df_slice['source'] == 'Wage')]    
         income['wage'] = {}
         income['wage']['amount'] = wage_df['amount'].sum()
-        income['wage']['hours_worked'] = wage_df['hours_worked'].sum()
-        income['wage']['avg_hours'] = float(income['wage']['hours_worked'])/((end-begin).days/30.44)
-
+        if income['wage']['amount'] != 0:
+            income['wage']['hours_worked'] = wage_df['hours_worked'].sum()
+            income['wage']['avg_hours'] = float(income['wage']['hours_worked'])/((end-begin).days/30.44)
+        else:
+            income['wage']['hours_worked'] = 0
+            income['wage']['avg_hours'] = 0            
 
         income['other'] = {}
         income['other']['monthly'] = income_df.loc[(income_df['monthly'] == True)]['amount'].sum()

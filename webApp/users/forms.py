@@ -113,7 +113,7 @@ class Sort_Transactions(FlaskForm):
     sort_submit = SubmitField('Sort')
 
 class Generate_Report(FlaskForm):
-    begin = StringField('Begin Date', validators=[DataRequired()])
+    begin = StringField('Begin Date', validators=[DataRequired()],  default = date.today().strftime('%Y-%m')+'-1')
     end = StringField('End Date', validators=[DataRequired()], default = date.today().strftime('%Y-%m-%d'))
     submit = SubmitField('Generate Report')
 

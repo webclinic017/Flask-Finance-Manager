@@ -27,10 +27,12 @@ def create_app(config_class = Config):
     from webApp.posts.routes import posts
     from webApp.main.routes import main
     from webApp.errors.handlers import errors
+    from webApp.trading.routes import trading
     app.register_blueprint(users)
     app.register_blueprint(posts)
     app.register_blueprint(main)
     app.register_blueprint(errors)
+    app.register_blueprint(trading)
     return app           
 
 def reset_database(config_class = Config):
@@ -39,3 +41,8 @@ def reset_database(config_class = Config):
     db.drop_all()
     db.create_all()
 
+def create_tables(config_class = Config):
+    app = Flask(__name__)
+    app.config.from_object(Config)
+    db.init_app(app)
+    db.create_all()

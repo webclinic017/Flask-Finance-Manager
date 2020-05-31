@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<table class="table table-dark">
+
+    <tr>
+        <th>Exchange</th>
+        <th>Ticker</th>
+        <th>Low</th>
+        <th>Close</th>
+        <th>Time</th>
+    </tr>
+
+    {% for alert in alerts %}
+    <tr>
+        <td>{{alert.exchange}}</td>
+        <td>{{alert.ticker}}</td>
+        <td>{{alert.low}}</td>
+        <td>{{alert.close}}</td>
+        <td>{{alert.date}}</td>
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+{% endblock content %}

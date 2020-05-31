@@ -85,4 +85,16 @@ class Income(db.Model):
     hours_worked = db.Column(db.Numeric(10,2))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) 
     def __repr__(self):
-        return f"Income('€{self.amount} ','{self.company}  ','{self.date}')"   
+        return f"Income('€{self.amount} ','{self.company}  ','{self.date}')" 
+
+
+class StockAlert(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    low_price = db.Column(db.Numeric(10,2))
+    high_price = db.Column(db.Numeric(10,2))
+    open_price = db.Column(db.Numeric(10,2))
+    close_price = db.Column(db.Numeric(10,2))
+    volume = db.Column(db.Numeric(10,2))
+    exchange = db.Column(db.String(100))
+    ticker = db.Column(db.String(20))

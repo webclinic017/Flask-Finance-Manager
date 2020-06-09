@@ -1,13 +1,17 @@
 {% extends "layout.html" %}
 {% block content %}
 
+
 <table class="table table-dark">
 
     <tr>
         <th>Exchange</th>
         <th>Ticker</th>
+        <th>High</th>
         <th>Low</th>
+        <th>Open</th>
         <th>Close</th>
+        <th>Volume</th>
         <th>Time</th>
     </tr>
 
@@ -15,8 +19,11 @@
     <tr>
         <td>{{alert.exchange}}</td>
         <td>{{alert.ticker}}</td>
-        <td>{{alert.low}}</td>
-        <td>{{alert.close}}</td>
+        <td>{{alert.high_price}}</td>
+        <td>{{alert.low_price}}</td>
+        <td>{{alert.open_price}}</td>
+        <td>{{alert.close_price}}</td>
+        <td>{{alert.volume}}</td>
         <td>{{alert.date}}</td>
     </tr>
 

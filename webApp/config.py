@@ -20,3 +20,5 @@ class Config:
     MAIL_USE_SSL = True
     MAIL_USERNAME = config.get('GMAIL')
     MAIL_PASSWORD = config.get('GMAIL_PASS')
+    ALPACA_PAPER_KEY_ID = config.get('ALPACA_PAPER_KEY_ID')
+    ALPACA_PAPER_SECRET_KEY = config.get('ALPACA_PAPER_SECRET_KEY')

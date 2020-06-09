@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h3>Work in progress:</h3> 
+<p>Using the alpaca trading API to market buy stocks when a predetermined signal from TradingView is triggered using their new webhook feature.</p>
+<p>Below you can see the current open positions and porfolio value (Starting value was $100000.00)</p>
+
+<h3>Portfolio Value: {{account_info['portfolio_value']}} $</h3>
+<table class="table table-dark">
+
+    <tr>
+        <th>Symbol</th>
+        <th>Price Bought</th>
+        <th>Current Price</th>
+        <th>Total P/L ($)</th>
+        <th>Total P/L (%)</th>
+
+    </tr>
+
+    {% for pos in positions %}
+    <tr class = "{{ "red" if pos['unrealized_plpc'] <= 0 else "green" }}" >
+        <td>{{pos['symbol']}}</td>
+        <td>{{pos['avg_entry_price']}}</td>
+        <td>{{pos['market_value']}}</td>
+        <td>{{pos['unrealized_pl']}}</td>
+        <td>{{ "{:.2f}".format(pos['unrealized_plpc']) }}%</td>
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+{% endblock content %}

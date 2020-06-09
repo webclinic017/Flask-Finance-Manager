@@ -66,7 +66,7 @@ def buy_stock():
         #Takes the webhook data as a string and converts it into dictionary
         data = ast.literal_eval(request.get_data(as_text=True))
         ticker = data['ticker']
-        price = data['high']
+        price = data['close']
 
 
         qty = 1

@@ -86,8 +86,7 @@ def buy_stock():
         }
         r = requests.post(f"{url}/v2/orders", headers=HEADERS, json=order_info)
         response = json.loads(r.content)
-        return response 
-
+        return "OK"
     else:
         return url_for('trading.paper_wallet')
 

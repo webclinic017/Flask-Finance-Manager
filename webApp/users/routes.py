@@ -303,6 +303,8 @@ def add_income():
 @login_required
 def dashboard(begin,end):
 
+    #Gets current date when page loads.
+    current_date = dt.date.today()
 
 
     #Gets all users transactions 
@@ -324,11 +326,15 @@ def dashboard(begin,end):
         begin = dt.datetime.strptime(begin, '%Y-%m-%d')
         end = dt.datetime.strptime(end, '%Y-%m-%d')
 
+        #We add one day so when we slice by date the end date gets included
+        end = end + dt.timedelta(days=1)
+
         #filters out the fixed monthly costs
         filt = (df['sub'] == False)
         data = df.loc[filt][begin:end]
         data_grp = data.groupby(['category'])
         sums = data_grp.apply(lambda x: x.amount.sum())
+        
         #Dict containing all info so we can pass this onto the template
         expenses = {}
         expenses['sums'] = sums
@@ -408,7 +414,7 @@ def dashboard(begin,end):
 
         total = income['total'] - float(expenses['total'])
 
-        return render_template('dashboard.html' , title='Dashboard' , expenses=expenses , income=income , total=total, form=form , data=png_data , no_sidebar=True)   
+        return render_template('dashboard.html' , title='Dashboard' , expenses=expenses , income=income , total=total, form=form , data=png_data , current_date=current_date, no_sidebar=True)   
     else:
         flash("Please add some transactions first before accessing the dashboard",'danger')
         return redirect(url_for('users.transactions', month=curr_month(), category="all", date_desc=0))

@@ -90,7 +90,7 @@ this_month = date.today().strftime("%m")
 class TransactionForm(FlaskForm):
     amount = DecimalField('Amount', validators=[DataRequired()])
     content = StringField('Content',  validators=[DataRequired()])
-    category = SelectField('Category',  choices=[('Groceries','Groceries'),('Bars/Clubs','Bars/Clubs'),('Restaurants','Restaurants'),('Smoking','Smoking'),('Other','Other'),('Fixed Monthly Cost','Fixed Monthly Cost')] , default='Groceries' )
+    category = SelectField('Category',  choices=[('Groceries','Groceries'),('Bars/Clubs','Bars/Clubs'),('Restaurants','Restaurants'),('Smoking','Smoking'),('Transportation','Transportation'),('Other','Other'),('Fixed Monthly Cost','Fixed Monthly Cost')] , default='Groceries' )
     tax_percentage = RadioField('TAX %', choices=[('21','21%'),('9','9%'),('0','0%')], default='21')
     is_deductable = RadioField('Tax Deductable?', choices=[('Yes','Yes'),('No','No')], default='No')
     submit = SubmitField('Post')
@@ -108,13 +108,13 @@ months = [("01","January"),("02","Februari"),("03","March"),("04","April"),("05"
 
 class Sort_Transactions(FlaskForm):
     month = SelectField('Month:',choices=months, default = this_month)
-    sort_category = SelectField('Category:',choices=[('all','All'),('Groceries','Groceries'),('Bars/Clubs','Bars/Clubs'),('Restaurants','Restaurants'),('Smoking','Smoking'),('Other','Other')] , default='all')
+    sort_category = SelectField('Category:',choices=[('all','All'),('Groceries','Groceries'),('Bars/Clubs','Bars/Clubs'),('Restaurants','Restaurants'),('Smoking','Smoking'),('Transportation','Transportation'),('Other','Other')] , default='all')
     date_desc = RadioField('Date', choices=[('0','&#x2191;'),('1','&#x2193;')] , default='0')
     sort_submit = SubmitField('Sort')
 
 class Generate_Report(FlaskForm):
-    begin = StringField('Begin Date', validators=[DataRequired()],  default = date.today().strftime('%Y-%m')+'-1')
-    end = StringField('End Date', validators=[DataRequired()], default = date.today().strftime('%Y-%m-%d'))
+    begin = StringField('Begin Date', validators=[DataRequired()])
+    end = StringField('End Date', validators=[DataRequired()])
     submit = SubmitField('Generate Report')
 
 

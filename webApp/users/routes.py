@@ -5,7 +5,7 @@ from webApp.models import User, Post , Task , Transaction , Income
 from webApp.users.forms import (RegistrationForm, LoginForm, UpdateAccountForm,
                                    RequestResetForm, ResetPasswordForm, TaskForm, 
                                    Sort_TaskForm, TransactionForm, Sort_Transactions, 
-                                   Generate_Report, IncomeForm)
+                                   Generate_Report, IncomeForm, Sort_Income)
 from webApp.users.utils import save_picture, send_reset_email
 import datetime as dt
 from sqlalchemy import extract
@@ -120,67 +120,6 @@ def reset_token(token):
         return redirect(url_for('users.login'))
     return render_template('reset_token.html', title = 'Reset Password' , form=form)                
 
-#TASK SECTION
-
-
-@users.route("/tasks" , methods=['GET','POST'] )
-@login_required
-def tasks():
-    form = TaskForm()
-    sort_form= Sort_TaskForm()
-    tasks = Task.query.filter_by(author = current_user).order_by(Task.date_posted.desc())
-
-    if form.submit.data and form.validate_on_submit():
-        task = Task(category= form.category.data, content=form.content.data, author= current_user, due_date=form.due_date.data , importance = int(form.importance.data))
-        print(task)
-        db.session.add(task)
-        db.session.commit()
-        flash('Task Added!','success')
-        return redirect(url_for('users.tasks'))
-
-    if sort_form.sort_submit.data and sort_form.validate_on_submit():
-        return redirect(url_for('users.sort_tasks', category=sort_form.sort_category.data, date_desc=sort_form.date_desc.data , imp_desc=sort_form.imp_desc.data))
-        
-    return render_template('tasks.html',title='To-do List' , form=form, tasks=tasks ,sort_form=sort_form , no_sidebar=True)
-
-
-@users.route("/tasks/<string:category><date_desc><imp_desc>", methods=['GET','POST'])
-@login_required
-def sort_tasks(category, date_desc=None, imp_desc=None):
-    form = TaskForm()
-    sort_form = Sort_TaskForm()
-    if sort_form.sort_submit.data and sort_form.validate_on_submit():
-        return redirect(url_for('users.sort_tasks', category=sort_form.sort_category.data, date_desc=sort_form.date_desc.data , imp_desc=sort_form.imp_desc.data))
-    
-
-    if category == 'all':
-        if date_desc == '1':
-            tasks = Task.query.filter_by(author = current_user).order_by(Task.date_posted.desc())
-        elif imp_desc == '1':
-            tasks = Task.query.filter_by(author = current_user).order_by(Task.importance.desc())
-        else:
-            tasks = Task.query.filter_by(author = current_user)
-    else:        
-        if date_desc == '1':
-            tasks = Task.query.filter_by(author = current_user , category = category).order_by(Task.date_posted.desc())
-        elif imp_desc == '1':
-            tasks = Task.query.filter_by(author = current_user , category = category).order_by(Task.importance.desc())
-        else:
-            tasks = Task.query.filter_by(author = current_user , category = category)
-
-    return render_template('tasks.html', title='To-do List' , form=form, tasks=tasks , sort_form=sort_form , no_sidebar=True)
-
-
-@users.route("/task/<int:task_id>/delete", methods=['POST'])
-@login_required
-def delete_task(task_id):
-    task= Task.query.get_or_404(task_id)
-    if task.author != current_user:
-        abort(403)
-    db.session.delete(task)
-    db.session.commit()
-    flash('Task completed!', 'success')
-    return redirect(request.referrer)
 
 
 #Finance Section ---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -280,6 +219,15 @@ def delete_transaction(transaction_id):
 @login_required
 def add_income():
     form = IncomeForm()
+    sort_form = Sort_Income()
+    if request.args.get("month"):
+        month = request.args.get("month")
+    else:
+        month = curr_month()
+    income_data = Income.query.filter_by(author = current_user).filter(extract("month", Income.date)==month).all()
+
+    
+
     if form.submit.data and form.validate_on_submit():
         if form.monthly.data == "Yes":
             monthly = True
@@ -292,8 +240,23 @@ def add_income():
         flash('Income Added!','success')
         return redirect(url_for('users.add_income'))
 
-    return render_template('add_income.html', form=form)
 
+    if sort_form.sort_submit.data and sort_form.validate_on_submit():
+        return redirect(url_for('users.add_income', month=sort_form.month.data))
+
+    return render_template('add_income.html', form=form, sort_form=sort_form,  income_data=income_data, total_sum= sum_total(income_data) )
+
+#Deletes a Income
+@users.route("/income/<int:income_id>/delete", methods=['POST'])
+@login_required
+def delete_income(income_id):
+    income= Income.query.get_or_404(income_id)
+    if income.author != current_user:
+        abort(403)
+    db.session.delete(income)
+    db.session.commit()
+    flash('Income deleted!', 'success')
+    return redirect(request.referrer)
 
 
 

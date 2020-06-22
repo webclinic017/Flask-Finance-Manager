@@ -112,6 +112,11 @@ class Sort_Transactions(FlaskForm):
     date_desc = RadioField('Date', choices=[('0','&#x2191;'),('1','&#x2193;')] , default='0')
     sort_submit = SubmitField('Sort')
 
+
+class Sort_Income(FlaskForm):
+    month = SelectField('Month:',choices=months, default = this_month)
+    sort_submit = SubmitField('Sort')
+
 class Generate_Report(FlaskForm):
     begin = StringField('Begin Date', validators=[DataRequired()])
     end = StringField('End Date', validators=[DataRequired()])

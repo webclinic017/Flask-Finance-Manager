@@ -161,8 +161,8 @@
 
                   <td>{{transaction.date.strftime('%d-%m-%Y')}}</td>
                   <td>{{transaction.content}}</td>
-                  <td>{{transaction.amount}}</td>
-                  <td>{{transaction.tax_amount}}</td>
+                  <td>€{{transaction.amount}}</td>
+                  <td>€{{transaction.tax_amount}}</td>
                   <td style="text-transform: capitalize;">{{transaction.category}}</td>                 
                   <td><form action="{{ url_for('users.delete_transaction', transaction_id=transaction.id) }}" method="POST">
                       <input class="btn btn-light" type="submit" value="&#x274C">

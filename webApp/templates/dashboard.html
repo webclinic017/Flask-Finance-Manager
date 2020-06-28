@@ -40,6 +40,8 @@
         </form>
         
 
+
+        <div class="income-section">
             <div class='row'>
                 <!-- Expenses -->
                 <div class='col'>
@@ -73,7 +75,7 @@
                     </tr>
                 </table>
                 <div class='graph'>
-                    <img src='data:image/png;base64,{{data}}'>
+                    <img src='data:image/png;base64,{{pie_plot}}'>
                 </div>
               </div>
               <!-- Income -->
@@ -109,10 +111,6 @@
                     <tr>
                         <td>Average Wage/Hour</td>
                         <td>€ {{ '{:.2f}'.format(income['freelance']['avg_wage']) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Average Hours/Month</td>
-                        <td>{{ '{:.2f}'.format(income['freelance']['avg_hours']) }}</td>
                     </tr>
                     <tr>
                         <td>Net Total</td>
@@ -154,8 +152,21 @@
               </div>
 
             </div>
+        </div>
+        <hr class="rounded">
+        <div class='year-overview'>
+                <h3>Yearly Overview</h3>
 
+            <div class='row'>
+                    <div class= 'col'>
+                        <div class='year-line-plot'>
+                            <img src='data:image/png;base64,{{year_plot}}'>
+                        </div>
+                    </div>
 
+                    <div class= 'col'></div>
+            </div>
+        </div>
         </div>
         
 

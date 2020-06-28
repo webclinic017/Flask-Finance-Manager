@@ -262,14 +262,22 @@ def delete_income(income_id):
 
 #Dashboard 
 
-@users.route("/dashboard/<begin>/<end>", methods=['GET','POST'])
+@users.route("/dashboard/", methods=['GET','POST'])
 @login_required
-def dashboard(begin,end):
+def dashboard():
 
     #Gets current date when page loads.
     current_date = dt.date.today()
 
+    if request.args.get("begin"):
+        begin = request.args.get("begin")
+    else:
+        begin = current_date.strftime('%Y-%m')+'-1'
 
+    if request.args.get("end"):
+        end = request.args.get("end")
+    else:
+        end = current_date.strftime('%Y-%m-%d')
     #Gets all users transactions 
     trans = Transaction.query.filter_by(author = current_user)
     
@@ -322,7 +330,24 @@ def dashboard(begin,end):
         buf = BytesIO()
         fig.savefig(buf, format="png")
         # Embed the result in the html output.
-        png_data = base64.b64encode(buf.getbuffer()).decode("ascii")
+        pie_plot = base64.b64encode(buf.getbuffer()).decode("ascii")
+
+
+        # Gets all transaction data to generate a year plot
+        df = pd.read_sql("transaction",db.engine)
+        df['Date'] = pd.to_datetime(df['date'])
+        df = df.loc[df['category'] != 'abbonement']
+        df = df.groupby([pd.Grouper(key='date', freq='M'),'category'])
+
+        fig, ax = plt.subplots(figsize=(6,4))
+        plot = df.sum()['amount'].unstack().plot(ax=ax)
+        # Save it to a temporary buffer.
+        buf = BytesIO()
+        fig.savefig(buf, format="png")
+        # Embed the result in the html output.
+        year_plot = base64.b64encode(buf.getbuffer()).decode("ascii")
+
+
 
 
         #Income data
@@ -346,7 +371,6 @@ def dashboard(begin,end):
             income['freelance']['hours_worked'] = float(freelance_df['hours_worked'].sum())
             income['freelance']['net_amount'] = float(income['freelance']['amount']) - income['freelance']['Total_VAT'] 
             income['freelance']['avg_wage'] =  income['freelance']['net_amount']/income['freelance']['hours_worked']
-            income['freelance']['avg_hours'] = float(income['freelance']['hours_worked'])/((end-begin).days/30.44)
         else:
             income['freelance']['VAT'] = 0
             #Gets all transactions that are tax deductable and gets their TAX
@@ -355,7 +379,6 @@ def dashboard(begin,end):
             income['freelance']['hours_worked'] = 0
             income['freelance']['net_amount'] = 0
             income['freelance']['avg_wage'] =  0
-            income['freelance']['avg_hours'] =0
 
 
         wage_df = income_df_slice.loc[(income_df_slice['source'] == 'Wage')]    
@@ -371,13 +394,13 @@ def dashboard(begin,end):
         income['other'] = {}
         income['other']['monthly'] = income_df.loc[(income_df['monthly'] == True)]['amount'].sum()
         income['other']['total_monthly'] = income['other']['monthly']*math.ceil((end-begin).days/31.1)
-        income['other']['amount'] = income_df_slice.loc[(income_df_slice['source'] == 'Other')]['amount'].sum()
+        income['other']['amount'] = income_df_slice.loc[(income_df_slice['source'] == 'Other') & (income_df_slice['monthly'] == False)]['amount'].sum()
 
         income['total'] = income['freelance']['net_amount'] + income['wage']['amount'] + float(income['other']['total_monthly']) + float(income['other']['amount'])
 
         total = income['total'] - float(expenses['total'])
 
-        return render_template('dashboard.html' , title='Dashboard' , expenses=expenses , income=income , total=total, form=form , data=png_data , current_date=current_date, no_sidebar=True)   
+        return render_template('dashboard.html' , title='Dashboard' , expenses=expenses , income=income , total=total, form=form , pie_plot=pie_plot , year_plot=year_plot, current_date=current_date, no_sidebar=True)   
     else:
         flash("Please add some transactions first before accessing the dashboard",'danger')
         return redirect(url_for('users.transactions', month=curr_month(), category="all", date_desc=0))

@@ -137,3 +137,12 @@ a.article-title:hover {
   background-color: green
 }
 
+
+.year-overview {
+  text-align: center;
+}
+
+hr.rounded {
+  border-top: 8px solid #4d4d4d;
+  border-radius: 5px;
+}
